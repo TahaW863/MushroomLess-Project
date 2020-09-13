@@ -1,0 +1,34 @@
+{
+  "event_id": "01EJ0SECRKRAT5Z2CPFZQFGR1F",
+  "event_type": "form_response",
+  "form_response": {
+    "form_id": "mBMUC4A8",
+    "token": "p4wag7zwwribioey7p4wag7z2cysvohi",
+    "landed_at": "2020-09-12T09:13:10Z",
+    "submitted_at": "2020-09-12T09:13:23Z",
+    "definition": {
+      "id": "mBMUC4A8",
+      "title": "Image-Classification",
+      "fields": [
+        {
+          "id": "urZEwn5oqE2G",
+          "title": "Please Attach (upload)  your Photo.",
+          "type": "file_upload",
+          "ref": "49f4334b-570c-488f-b809-279f48eafbff",
+          "properties": {}
+        }
+      ]
+    },
+    "answers": [
+      {
+        "type": "file_url",
+        "file_url": "https://api.typeform.com/responses/files/bc55c2899d7c26977a58c39ad01f636d4c37f96cb8764a51a41787fd40fa888a/Grooves.jpg",
+        "field": {
+          "id": "urZEwn5oqE2G",
+          "type": "file_upload",
+          "ref": "49f4334b-570c-488f-b809-279f48eafbff"
+        }
+      }
+    ]
+  }
+}
