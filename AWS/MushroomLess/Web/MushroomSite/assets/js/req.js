@@ -23,17 +23,18 @@ xmlhttp.onreadystatechange = function () {
         if (parseInt(x[1]) == 1) value = 1;
       }
     }
-    var Res;
+    var Res='NO';
     if (value == 1) {
       Res = 'YES!';
     } else {
       Res = 'No!';
     }
-    document.getElementById('toggel').innerHTML = Res;
+    
+    document.getElementById('tog').innerHTML = Res;
     console.log(x);
-    document.getElementById('score').innerHTML = myObj.body;
+    
   }
 };
-xmlhttp.open('GET', 'SOME-LAMBDA-API', true);
+xmlhttp.open('GET', 'https://6yg9mzup2l.execute-api.us-east-1.amazonaws.com/default/Lambda-0', true);
 xmlhttp.send();
 //#document.getElementById("toggel").innerHTML = "Tutorix";
