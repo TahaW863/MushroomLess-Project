@@ -28,33 +28,42 @@ def lambda_handler(event, context):
             data_list = get_list(body)
             #upload The LIST To The S3
             s3 = boto3.client("s3")
-            with open("/tmp/log.txt", "w") as f:
-                json.dump(data_list, f)
-
-            s3.upload_file("/tmp/LIST.txt", "S3BucketName", "LIST.txt")
+            dat_={}
+            dat_['li']=data_list
+            filename_='List.json'
+            upload_stream=bytes(json.dumps(dat_).encode('UTF-8'))
+            s3.put_object(Bucket="data-text-or-image-2020-9-15-7-41", Key=filename_,Body=upload_stream)
         else:
             data_list = get_link(body)
             #upload The Link To The S3
             s3 = boto3.client("s3")
-            with open("/tmp/log.txt", "w") as f:
-                json.dump(data_list, f)
-
-            s3.upload_file("/tmp/LIST.txt", "S3BucketName", "LIST.txt")
+            dat_={}
+            dat_['li']=data_list
+            filename_='LINK.json'
+            upload_stream=bytes(json.dumps(dat_).encode('UTF-8'))
+            s3.put_object(Bucket="data-text-or-image-2020-9-15-7-41", Key=filename_,Body=upload_stream)
         return respond("POSTED")
 
     else:
         #GET For The TEXT
         s3 = boto3.client("s3")
-        endpoint_name = 'ENDPOINT-FOR-THE-TEXT-CALSSIFIER'
+        endpoint_name = 'sagemaker-tensorflow-2020-09-15-04-21-08-261'
         client = boto3.client('runtime.sagemaker', region_name='us-east-1')
-        filename="/tmp/LIST.txt"
-        fileObj = s3.get_object(Bucket="S3BucketName", Key=filename)
-        data_list=fileObj["Body"].read().decode('utf-8')
-        data = parse_ans_to_list(data_list)
+        bucket = 'data-text-or-image-2020-9-15-7-41'
+        key = 'List.json'
+        res = s3.get_object(Bucket=bucket, Key=key)
+        content = res['Body']
+
+        jsonObject = json.loads(content.read())
+    
+        data_list= jsonObject['li']
+        data=parse_ans_to_list(data_list)
+        
         response = client.invoke_endpoint(EndpointName=endpoint_name, \
                                           Body=json.dumps(data))
         response_body = response['Body']
-        return respond(json.loads(response_body.read())['outputs']['score']['floatVal'])
+        ans=json.loads(response_body.read())['outputs']['score']['floatVal']
+        return respond(ans)
         
     return respond("unhandled")
     
@@ -126,9 +135,8 @@ def parse_ans_to_list(li):
              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
              0, 0]]
-
     for i in range(0,22):
-        for j in range(0, 112):
+        for j in range(0, 111):
             if li[i]==lix[j]:
                 data[0][j]=1
         

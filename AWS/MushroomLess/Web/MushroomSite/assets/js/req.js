@@ -24,14 +24,17 @@ xmlhttp.onreadystatechange = function () {
       }
     }
     var Res='NO';
+    var st="Edibility";
     if (value == 1) {
       Res = 'YES!';
+      
     } else {
       Res = 'No!';
     }
     
     document.getElementById('tog').innerHTML = Res;
-    console.log(x);
+    document.getElementById('score').innerHTML=st+" percentage: "+ new Number(myObj).toFixed(20);
+    console.log(myObj);
     
   }
 };
