@@ -1,8 +1,9 @@
 import json
 import boto3
-from botocore.vendore import requests
-import numpy as np
+import urllib3
+import base64
 import os
+import ast
 def respond(res):
     return {
         'statusCode': '200',
@@ -17,38 +18,37 @@ def respond(res):
 #Lambda_handler 1
 def lambda_handler(event, context):
     
-    if event['httpMethod'] == "POST":
-        return respond("NOTHING TO POST")
-
-    else:
-        #GET For The Image
-        s3 = boto3.client("s3")
-        endpoint_name = 'sagemaker-tensorflow-2020-09-15-04-21-08-261'
-        client = boto3.client('runtime.sagemaker', region_name='us-east-1')
-        bucket = 'data-text-or-image-2020-9-15-7-41'
-        key = 'LINK.json'
-        res = s3.get_object(Bucket=bucket, Key=key)
-        content = res['Body']
-        jsonObject = json.loads(content.read())
-        image_url= jsonObject['li']
-        session=requests.Session()
-        image_raw=session.get(image_url)
-        return respond(ans)
+    s3 = boto3.client("s3")
         
-    return respond("unhandled")
+    bucket = 'data-text-or-image-2020-9-15-7-41'
+    key = 'LINK.json'
+    res = s3.get_object(Bucket=bucket, Key=key)
+    content = res['Body']
+    jsonObject = json.loads(content.read())
+    image_url= jsonObject['li']
+    http = urllib3.PoolManager()
+    file = http.request('GET',image_url,headers={'Content-Type': 'image/jpeg'})
+    res_x=classify_deployed(file.data)
+    #print(file.headers)
+    return respond(res_x)
+        
     
- 
-
+    
 def classify_deployed(image_file):
-    payload = None
-    with open(image_file, 'rb') as f:
-        payload = f.read()
-        payload = bytearray(payload)
-        
-    deployed_endpoint.content_type = 'application/x-image'
-    result = json.loads(deployed_endpoint.predict(payload))
-    best_prob_index = np.argmax(result)
-    return (classes[best_prob_index], result[best_prob_index])
+    payload = image_file
+    endpoint="IC-MushroomLess-1600233742"
+    runtime = boto3.Session().client(service_name='sagemaker-runtime', region_name='us-east-1')
+    res = runtime.invoke_endpoint(EndpointName=endpoint, ContentType='application/x-image', Body=payload)
+    probs = res['Body'].read().decode("utf-8", errors="replace")
+    probs=ast.literal_eval(probs)
+    maxIndx=0
+    for i in range(0,127):
+        if maxIndx < probs[i]:
+            maxIndx=probs[i]
+    for i in range(0,127):
+        if maxIndx == probs[i]:
+            maxIndx=i
+    return (classes[i], probs[i])
 
 
 classes=['Agaricus bisporus',
@@ -177,4 +177,6 @@ classes=['Agaricus bisporus',
 'Xerocomellus chrysenteron',
 'Yellow knight',
 'Yellow-stainers',
-'shiitake',]
+'shiitake']
+    
+ 
