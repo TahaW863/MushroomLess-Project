@@ -36,7 +36,7 @@ def lambda_handler(event, context):
     
 def classify_deployed(image_file):
     payload = image_file
-    endpoint="IC-MushroomLess-1600233742"
+    endpoint="IC-MushroomLess-1600254408"
     runtime = boto3.Session().client(service_name='sagemaker-runtime', region_name='us-east-1')
     res = runtime.invoke_endpoint(EndpointName=endpoint, ContentType='application/x-image', Body=payload)
     probs = res['Body'].read().decode("utf-8", errors="replace")
